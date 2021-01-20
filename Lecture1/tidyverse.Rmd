@@ -179,7 +179,8 @@ movies %>%
 movies %>%  
   filter(mpaa != "") %>%
   group_by(year, mpaa) %>%
-  summarize(avg_budget = mean(budget, na.rm = TRUE),
+  summarize(count = n(), 
+            avg_budget = mean(budget, na.rm = TRUE),
             avg_rating = mean(rating, na.rm = TRUE)) %>%
   arrange(desc(year), mpaa) 
 
@@ -316,7 +317,7 @@ who.summary <- who %>%
 who.summary
 
 who.summary %>%
-  ggplot(aes(x=year, y=n)) + geom_line()
+  ggplot(aes(x=year, y=n)) + geom_line() + scale_y_log10()
 
 ```
 
