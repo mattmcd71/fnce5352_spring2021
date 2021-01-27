@@ -4,12 +4,26 @@ library(MASS)
 data("Sitka")
 str(Sitka)
 
+ggplot(txhousing, aes(x=volume, y=sales)) +
+       geom_point()
+
+ggplot(Sitka, aes(x=Time, y=size)) +
+  geom_point(aes(color=treat)) + 
+  geom_smooth()
+
+ggplot(Sitka, aes(x=Time, y=size)) +
+  geom_point(aes(shape=treat)) + 
+  geom_smooth()
 
 
+To zoom into small values of y, and clearly see that they exist, coord_cartesian(ylim=c(0.50)) was used. Can you explain this code
 
-
-
-
+ggplot(diamonds) + 
+  geom_histogram(aes(x = y), binwidth = 0.5) +
+  coord_cartesian(ylim = c(0, 50))
+  
+scale_y_log10()
+  #coord_cartesian(ylim = c(0, 50))
 
 
 
@@ -41,7 +55,7 @@ col_types <- cols(
 who <- read_csv('https://extranet.who.int/tme/generateCSV.asp?ds=notifications', col_types = col_types)
 who <- who[,c(1:3, 6, 27:33, 37:43, 47:53, 58:64, 73:79, 84:90)]
 
-who <- who %>%
+who2 <- who %>%
   select(-iso2, -iso3) %>%
   gather(group, cases, -country, -year ) %>%
   mutate(group = str_replace(group, "new_*", ""),
@@ -54,7 +68,7 @@ who <- who %>%
   group_by(year, gender, age, method) %>%
   summarize(total_cases = sum(cases, na.rm = TRUE)) 
 
-who %>%
+who2 %>%
   ggplot(aes(x = year, y = total_cases, linetype = gender)) +
   geom_line() +
   facet_grid(method ~ age,
