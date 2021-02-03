@@ -16,7 +16,7 @@ ggplot(Sitka, aes(x=Time, y=size)) +
   geom_smooth()
 
 
-To zoom into small values of y, and clearly see that they exist, coord_cartesian(ylim=c(0.50)) was used. Can you explain this code
+#To zoom into small values of y, and clearly see that they exist, coord_cartesian(ylim=c(0.50)) was used. Can you explain this code
 
 ggplot(diamonds) + 
   geom_histogram(aes(x = y), binwidth = 0.5) +

@@ -147,6 +147,11 @@ ames_test  <- testing(data_split)
 
 nrow(ames_train)/nrow(ames)
 
+ames_train %>%
+  ggplot(aes(x=Sale_Price)) + 
+  geom_density() + scale_x_log10() +
+  geom_density(data=ames_test, aes(x=Sale_Price), color='red')
+
 # ------------------------------------------------------------------------------
 # Ames Housing Data (slide 6)
 
@@ -234,7 +239,7 @@ test_pred <-
 
 test_pred %>% 
   dplyr::select(log_price, .pred) %>% 
-  slice(1:3)
+  ggplot(aes(x=log_price, y=.pred)) + geom_point()
 
 # ------------------------------------------------------------------------------
 # Estimating Performance (slide 19)
@@ -246,6 +251,9 @@ perf_metrics <- metric_set(rmse, rsq, ccc)
 # A tidy result back:
 test_pred  %>% 
   perf_metrics(truth = log_price, estimate = .pred)
+
+dplyr::select(log_price, .pred) %>%
+  ggplot(aes(x=log_price, y=.pred)) + geom_point()
 
 # ------------------------------------------------------------------------------
 # Part 3
