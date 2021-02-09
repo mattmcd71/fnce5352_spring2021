@@ -252,6 +252,7 @@ perf_metrics <- metric_set(rmse, rsq, ccc)
 test_pred  %>% 
   perf_metrics(truth = log_price, estimate = .pred)
 
+test_pred %>%
 dplyr::select(log_price, .pred) %>%
   ggplot(aes(x=log_price, y=.pred)) + geom_point()
 
