@@ -566,8 +566,8 @@ knn_pred <-
            #function(x, y) predict(x, assessment(y)),
            .id = "fold")                                 
 
-map_dbl(1:10, function(x) x+3)
-map_dbl(1:10, ~ .x + 3)
+# map_dbl(1:10, function(x) x+3)
+# map_dbl(1:10, ~ .x + 3)
 
 prices <-  
   map_dfr(knn_res$splits,  
@@ -578,6 +578,7 @@ rmse_estimates <-
   knn_pred %>%  
   bind_cols(prices) %>% 
   group_by(fold) %>% 
+#  summarise(rmse = rmse(across(), Sale_Price, .pred), .groups='drop')
   do(rmse = rmse(., Sale_Price, .pred)) %>% 
   unnest(cols = c(rmse)) 
 
@@ -647,6 +648,8 @@ finalize(rf_set, mtcars %>% dplyr::select(-mpg))
 knn_param <- 
   parameters(neighbors(), weight_func(), dist_power())
 
+knn_sfd <- grid_max_entropy(knn_param, size=50)
+
 # ------------------------------------------------------------------------------
 # Tagging Tuning parameters (slide 40)
 
@@ -676,13 +679,17 @@ set.seed(522)
 knn_grid <- knn_mod %>% parameters() %>% grid_regular(levels = c(15, 5))
 ctrl <- control_grid(verbose = TRUE)
 
+ames_wfl2 <- 
+  workflow() %>% 
+  add_recipe(ames_rec) %>% 
+  add_model(knn_mod)
 
 knn_tune <- 
-  tune_grid(ames_rec, model = knn_mod, resamples = cv_splits, grid = knn_grid, control = ctrl)
+  tune_grid(ames_wfl2, resamples = cv_splits, grid = knn_grid, control = ctrl)
 
 knn_tune
 knn_tune$.metrics[[1]]
-show_best(knn_tune, metric = "rmse", maximize = FALSE)
+show_best(knn_tune, metric = "rmse")
 
 knn_tune %>% 
   collect_metrics() %>% 
@@ -717,7 +724,7 @@ knn_tune$.metrics[[1]]
 # ------------------------------------------------------------------------------
 # Resampled Performance Estimates (slide 45)
 
-show_best(knn_tune, metric = "rmse", maximize = FALSE)
+show_best(knn_tune, metric = "rmse")
 
 # ------------------------------------------------------------------------------
 # Part 5
@@ -803,8 +810,8 @@ ctrl <- control_grid(save_pred = TRUE)
 
 glmn_tune <-
   tune_grid(
-    glmn_rec,
-    model = glmn_mod,
+    glmn_mod,
+    preprocessor = glmn_rec,
     resamples = chi_folds,
     grid = glmn_grid,
     control = ctrl
@@ -900,7 +907,7 @@ library(ggrepel)
 
 # Get the set of coefficients across penalty values
 tidy_coefs <-
-  broom::tidy(glmn_fit) %>%
+  broom::tidy(glmn_fit$fit) %>%
   dplyr::filter(term != "(Intercept)") %>%
   dplyr::select(-step, -dev.ratio)
 
