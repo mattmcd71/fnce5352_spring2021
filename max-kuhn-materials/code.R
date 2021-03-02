@@ -738,18 +738,24 @@ library(lubridate)
 
 Chicago_copy <- 
   Chicago %>% 
-  mutate(day = wday(date, label = TRUE, abbr = FALSE))
+  mutate(day = wday(date, label = TRUE, abbr = FALSE),
+         month = month(date))
+Chicago_copy %>% ggplot(aes(x=ridership)) + geom_density() + facet_grid(day ~month)
 
 Chicago_copy %>% 
   ggplot(aes(x = day, y = ridership)) + 
   geom_boxplot()
 
 Chicago_copy %>% 
+  ggplot(aes(x = day, y = ridership)) + 
+  geom_violin()
+
+Chicago_copy %>% 
   ggplot(aes(x = factor(Bears_Home), y = ridership)) + 
   geom_boxplot() + 
   facet_wrap(~ day)
 
-corr_mat <- cor(Chicago[, 2:21])
+corr_mat <- cor(Chicago[, 1:21])
 
 library(corrplot)
 corrplot(corr_mat, order = "hclust")
@@ -966,11 +972,27 @@ chi_wflow <-
   add_recipe(mars_rec) %>%
   add_model(mars_mod)
 
+
+
 chi_set <-
   parameters(chi_wflow) %>%
   update(
     `pca comps`  =  num_comp(c(0, 20)), # 0 comps => PCA is not used 
     `mars terms` = num_terms(c(2, 100)))
+
+chi_grid <- chi_set %>%
+  grid_regular(levels=c(10, 2, 7))
+
+ctrl <- control_grid(verbose = TRUE)
+
+mars_tune_grid <-
+  tune_grid(
+    chi_wflow,
+    resamples = chi_folds,
+    grid = chi_grid,
+    metrics = metric_set(rmse),
+    control = ctrl
+  )
 
 # ------------------------------------------------------------------------------
 # Running the Optimization (slide 70)
