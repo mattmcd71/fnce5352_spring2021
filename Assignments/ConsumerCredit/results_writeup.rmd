@@ -1,8 +1,9 @@
 ---
 title: "Summary of Credit Scoring Assignment"
 author: "Matt McDonald"
-date: "April 20, 2021"
+date: "May 7, 2021"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 subtitle: University of Connecticut FNCE 5352
@@ -14,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Summary
 
-Fifteen submissions were collected (including one submission by Professor McDonald).  Of these, 8 were scoreable since they included a prediction for every record (37,500) in the "ConsumerCred-train.csv" file, and 7 still need remediation.  This document summarizes the results of scoring these submissions, and includes an analysis of the distribution of the results.  
+Fifteen submissions were collected (including one submission by Professor McDonald).  All submission included a prediction for every record (37,500) in the "ConsumerCred-train.csv" file, and were included in this analysis.  This document summarizes the results of scoring these submissions, and includes an analysis of the distribution of the results.  
 
 # Processing
 
@@ -69,7 +70,7 @@ submissions <- submissions %>%
 
 ## Distribution of scores
 
-The following graph show the distribution of scores.  All submissions have AUC values greater than 50%, which indicates that every conforming submission had some predictive power.  An AUC value of 50% indicates a completely random model.
+The following graph show the distribution of scores.  All but one submission have AUC values greater than 50%, which indicates that every conforming submission had some predictive power.  An AUC value of 50% indicates a completely random model.
 
 ```{r}
 
